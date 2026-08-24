@@ -1,0 +1,10 @@
+{
+  "name": "NutriHierro",
+  "short_name": "NutriHierro",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff8f0",
+  "theme_color": "#b52b27",
+  "description": "Platos y bebidas para una alimentación rica en hierro",
+  "icons": []
+}

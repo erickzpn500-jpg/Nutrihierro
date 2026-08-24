@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b52b27">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriHierro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #fff8f0;
+            color: #333;
+        }
+
+        header {
+            background: #b52b27;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 8px;
+        }
+
+        .contenedor {
+            max-width: 1100px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .buscador {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .botones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            background: #e5a229;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #c88410;
+        }
+
+        .recetas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px #0002;
+            transition: transform 0.2s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-5px);
+        }
+
+        .emoji {
+            font-size: 55px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .tarjeta h2 {
+            color: #b52b27;
+            margin-bottom: 8px;
+        }
+
+        .tipo {
+            display: inline-block;
+            background: #ffe2a9;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .tarjeta ul {
+            margin: 10px 0 10px 20px;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: #333;
+            color: white;
+            text-align: center;
+        }
+
+        .mensaje {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🥗 NutriHierro</h1>
+    <p>Platos y bebidas para una alimentación rica en hierro</p>
+</header>
+
+<div class="contenedor">
+
+    <input
+        type="text"
+        id="buscador"
+        class="buscador"
+        placeholder="🔎 Buscar una receta..."
+        oninput="buscar()"
+    >
+
+    <div class="botones">
+        <button onclick="filtrar('todos')">Todos</button>
+        <button onclick="filtrar('plato')">🍽️ Platos</button>
+        <button onclick="filtrar('bebida')">🥤 Bebidas</button>
+    </div>
+
+    <div class="recetas" id="recetas"></div>
+
+    <p class="mensaje" id="mensaje"></p>
+
+</div>
+
+<footer>
+    <p>🥦 NutriHierro - Alimentación saludable</p>
+    <p>La alimentación es parte importante de la prevención de la anemia.</p>
+</footer>
+
+<script>
+
+const recetas = [
+    {
+        nombre: "Hígado encebollado",
+        tipo: "plato",
+        emoji: "🥩",
+        ingredientes: [
+            "Hígado de res",
+            "Cebolla",
+            "Tomate",
+            "Ajo",
+            "Aceite"
+        ],
+        descripcion: "Plato rico en hierro, acompañado de verduras."
+    },
+
+    {
+        nombre: "Sangrecita con arroz",
+        tipo: "plato",
+        emoji: "🍚",
+        ingredientes: [
+            "Sangrecita cocida",
+            "Cebolla",
+            "Ajo",
+            "Ají",
+            "Arroz"
+        ],
+        descripcion: "Preparación tradicional que aporta hierro."
+    },
+
+    {
+        nombre: "Lentejas con huevo",
+        tipo: "plato",
+        emoji: "🥣",
+        ingredientes: [
+            "Lentejas",
+            "Huevo",
+            "Cebolla",
+            "Tomate",
+            "Zanahoria"
+        ],
+        descripcion: "Las lentejas aportan hierro vegetal y proteínas."
+    },
+
+    {
+        nombre: "Ensalada de espinaca y limón",
+        tipo: "plato",
+        emoji: "🥗",
+        ingredientes: [
+            "Espinaca",
+            "Tomate",
+            "Limón",
+            "Zanahoria"
+        ],
+        descripcion: "Una ensalada sencilla con vitamina C del limón."
+    },
+
+    {
+        nombre: "Jugo de naranja",
+        tipo: "bebida",
+        emoji: "🍊",
+        ingredientes: [
+            "Naranjas",
+            "Agua"
+        ],
+        descripcion: "La vitamina C puede ayudar a mejorar la absorción del hierro de los alimentos."
+    },
+
+    {
+        nombre: "Limonada natural",
+        tipo: "bebida",
+        emoji: "🍋",
+        ingredientes: [
+            "Limones",
+            "Agua",
+            "Poca azúcar"
+        ],
+        descripcion: "Bebida refrescante que aporta vitamina C."
+    },
+
+    {
+        nombre: "Batido de papaya y naranja",
+        tipo: "bebida",
+        emoji: "🥭",
+        ingredientes: [
+            "Papaya",
+            "Naranja",
+            "Agua"
+        ],
+        descripcion: "Bebida frutal rica en vitamina C."
+    },
+
+    {
+        nombre: "Agua de maracuyá",
+        tipo: "bebida",
+        emoji: "🥤",
+        ingredientes: [
+            "Maracuyá",
+            "Agua",
+            "Poca azúcar"
+        ],
+        descripcion: "Una bebida refrescante para acompañar las comidas."
+    }
+];
+
+let filtroActual = "todos";
+
+function mostrarRecetas(lista = recetas) {
+
+    const contenedor = document.getElementById("recetas");
+    const mensaje = document.getElementById("mensaje");
+
+    contenedor.innerHTML = "";
+
+    if (lista.length === 0) {
+        mensaje.textContent = "😕 No encontramos esa receta.";
+        return;
+    }
+
+    mensaje.textContent = "";
+
+    lista.forEach(receta => {
+
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta";
+
+        tarjeta.innerHTML = `
+            <div class="emoji">${receta.emoji}</div>
+
+            <span class="tipo">
+                ${receta.tipo === "plato" ? "🍽️ Plato" : "🥤 Bebida"}
+            </span>
+
+            <h2>${receta.nombre}</h2>
+
+            <p>${receta.descripcion}</p>
+
+            <h3>Ingredientes:</h3>
+
+            <ul>
+                ${receta.ingredientes
+                    .map(ingrediente => `<li>${ingrediente}</li>`)
+                    .join("")}
+            </ul>
+        `;
+
+        contenedor.appendChild(tarjeta);
+    });
+}
+
+function filtrar(tipo) {
+
+    filtroActual = tipo;
+
+    if (tipo === "todos") {
+        mostrarRecetas(recetas);
+    } else {
+        mostrarRecetas(
+            recetas.filter(receta => receta.tipo === tipo)
+        );
+    }
+}
+
+function buscar() {
+
+    const texto = document
+        .getElementById("buscador")
+        .value
+        .toLowerCase();
+
+    let resultado = recetas.filter(receta => {
+
+        const coincideTexto =
+            receta.nombre.toLowerCase().includes(texto) ||
+            receta.descripcion.toLowerCase().includes(texto) ||
+            receta.ingredientes.some(i =>
+                i.toLowerCase().includes(texto)
+            );
+
+        const coincideFiltro =
+            filtroActual === "todos" ||
+            receta.tipo === filtroActual;
+
+        return coincideTexto && coincideFiltro;
+    });
+
+    mostrarRecetas(resultado);
+}
+
+mostrarRecetas();
+
+</script>
+
+</body>
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+}
+</script>
+</html>
